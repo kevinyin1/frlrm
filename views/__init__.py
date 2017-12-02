@@ -8,7 +8,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-def render_template(self, file_name, template_values=None):
+def render_template(self, file_name, template_values={}):
     if not template_values:
         template_values = {}
     template = JINJA_ENVIRONMENT.get_template(file_name)
