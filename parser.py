@@ -11,35 +11,38 @@ starting_airport = "JFK" #raw_input("What's the starting airport?: ")
 #howManyPeople = raw_input("How many adults are going?: ")
 #budgetForTrip = raw_input("What's your budget?: ")
 startDate = "12/01/2017" #aw_input("What's your start date?: ")
-endDate = "2/25/2017" #raw_input("What's your end date?: ")
+endDate = "3/25/2018" #raw_input("What's your end date?: ")
 totalTrip = 0
 
 def getDeals(startDate = None, endDate = None):
 	possibleDeals = []
+	print(datetime.strptime(startDate, "%m/%d/%Y").date())
+	print(datetime.strptime(endDate, "%m/%d/%Y").date())
 
 	for row in c1:
+		#print(datetime.strptime(startDate, "%m/%d/%Y").date() < datetime.strptime(row[2], "%m/%d/%Y %H:%M").date() < datetime.strptime(endDate, "%m/%d/%Y").date())
 		if str(row[4]) == "LOWEST":
 			if not startDate == None:
-				if datetime.strptime(startDate, "%m/%d/%Y").date() < datetime.strptime(row[2], "%m/%d/%Y %H:%M").date() and datetime.strptime(endDate, "%m/%d/%Y").date() > datetime.strptime(row[2], "%m/%d/%Y %H:%M").date():
+				if not datetime.strptime(startDate, "%m/%d/%Y").date() < datetime.strptime(row[2], "%m/%d/%Y %H:%M").date() < datetime.strptime(endDate, "%m/%d/%Y").date():
+					#print(datetime.strptime(row[2], "%m/%d/%Y %H:%M").date())
 					continue
-
-			if str(row[0].lower()) == str(starting_airport).lower():
-				flightInfo = {
-					"from": row[0],
-					"to": row[1],
-					"flightDate": row[2],
-					"totalPrice": float(row[5]) + float(row[6]),
-					"score": row[7],
-					"domestic": row[9]
-				}
-				possibleDeals.append(flightInfo)
-		else:
-			continue
-	else:
-		return possibleDeals
+				else:
+					if str(row[0]).lower() == str(starting_airport).lower():
+						#print(row[0])
+						flightInfo = {
+							"from": row[0],
+							"to": row[1],
+							"flightDate": row[2],
+							"totalPrice": float(row[5]) + float(row[6]),
+							"score": row[7],
+							"domestic": row[9]
+						}
+						possibleDeals.append(flightInfo)
+	#print(possibleDeals)
+	return possibleDeals
 
 def getBestDeal():
-	possibleDeals = getDeals(startDate, endDate)
+	global possibleDeals
 	highestScore = 0
 	bestFlight = None
 	for flight in possibleDeals:
@@ -71,16 +74,31 @@ def getCoordsString(airportCode):
 	return coords[airportCodes.index(airportCode)]
 
 def getRandomFlight():
-	possibleDeals = getDeals(startDate, endDate)
-	possibleFlights = []
-	if not len(possibleDeals) < 5:
+	global possibleDeals
+	possibleFlights = None
+
+	if len(possibleDeals) > 5:
 		for x in range(0,5):
-			randIndex = randint(0, len(possibleDeals))
-			possibleFlights.append(possibleDeals[randIndex])
+			randIndex = randint(0, len(possibleDeals) - 1 )
+			if possibleFlights == None:
+				possibleFlights = [possibleDeals[randIndex]]
+			else:
+				possibleFlights.append(possibleDeals[randIndex])
+			print(possibleFlights)
+	else:
+		for item in possibleDeals:
+			possibleFlights.append(item)
 
-	choose = randint(0, len(possibleFlights))
+	if not possibleFlights == None:
+		choose = randint(0, len(possibleFlights))
+		print(choose)
+		flight = possibleFlights[choose]
+		return flight
+	else:
+		return None
 
-	flight = possibleFlights[choose]
-	return flight
+global possibleDeals
+possibleDeals = getDeals(startDate, endDate)
 
 print getRandomFlight()
+
