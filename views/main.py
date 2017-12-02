@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All rights reserved.
+# Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,15 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import webtest
+import webapp2
+from __init__ import *
 
-import main
+class MainPage(webapp2.RequestHandler):
+    def get(self):
+        render_template(self,'index.html')
 
-
-def test_get():
-    app = webtest.TestApp(main.app)
-
-    response = app.get('/')
-
-    assert response.status_int == 200
-    assert response.body == 'Hello, World!'
+app = webapp2.WSGIApplication([
+    ('/', MainPage),
+], debug=True)

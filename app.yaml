@@ -4,4 +4,10 @@ threadsafe: true
 
 handlers:
 - url: /.*
-  script: main.app
+  script: views.main.app
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
