@@ -1,27 +1,13 @@
-import csv
-import glob, os
-import random
-from random import randint
-from datetime import datetime
-import ast
-
-f1 = file('data/LowestFares.csv', 'r')
-c1 = csv.reader(f1)
-
-starting_airport = "JFK" #raw_input("What's the starting airport?: ")
-#howManyPeople = raw_input("How many adults are going?: ")
-#budgetForTrip = raw_input("What's your budget?: ")
-startDate = "01/01/2017" #aw_input("What's your start date?: ")
-endDate = "03/25/2018" #raw_input("What's your end date?: ")
-totalTrip = 0
-
 def getDeals(startDate = None, endDate = None):
 	possibleDeals = []
 	print(datetime.strptime(startDate, "%m/%d/%Y").date())
 	print(datetime.strptime(endDate, "%m/%d/%Y").date())
 
+	# For Row in CSV
 	for row in c1:
 		#print(datetime.strptime(startDate, "%m/%d/%Y").date() < datetime.strptime(row[2], "%m/%d/%Y %H:%M").date() < datetime.strptime(endDate, "%m/%d/%Y").date())
+		
+		# If column 4 == "LOWEST":
 		if str(row[4]) == "LOWEST":
 			if not startDate == None:
 				if not datetime.strptime(startDate, "%m/%d/%Y").date() < datetime.strptime(row[2], "%m/%d/%Y %H:%M").date() < datetime.strptime(endDate, "%m/%d/%Y").date():
@@ -97,14 +83,52 @@ def getRandomFlight():
 		return None
 
 def getNearby(flight):
+	
+
 	destination = flight['to']
 	location = ast.literal_eval(getCoordsString(destination).replace("{lat:", "{\"lat\":").replace(", lng:", ", \"lng\":"))
 
-	url = ""
+	typesToSearch = ["lodging", "food", "attractions"]
+	nearby = {}
+	pp = pprint.PrettyPrinter()	
+	
+	for searchType in typesToSearch:
+		try:
+			nearby[searchType]
+		except KeyError:
+			nearby.update({searchType: []})
 
-global possibleDeals
-possibleDeals = getDeals(startDate, endDate)
+		url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + str(location['lat']) + "," + str(location['lng']) + "&keyword=" + searchType + "&rankby=prominence&radius=10000&key=AIzaSyC_phvxZIy7dHAEh_lu7T2p0ZnHhZBDZsw"
 
-flight = getRandomFlight()
-getNearby(flight)
+		r = requests.get(url)
+		
+		for result in r.json['results']:
+			print("price_level" in result)
+			if "rating" in result:
+				rating = result['rating']
+			else:
+				rating = None
 
+			tempDict = {
+				"name": result['name'].encode('utf-8'),
+				"address": result['vicinity'],
+				"price_level": price_level,
+				"rating": rating
+			}
+
+			for dupSearch in typesToSearch:
+				try:
+					if tempDict in nearby[dupSearch]:
+						exists = True
+						break
+				except KeyError:
+					continue
+			else:
+				exists = False
+
+			if exists == True:
+				pass	
+			else:	
+				nearby[searchType].append(tempDict)
+
+	return nearby
