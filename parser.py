@@ -84,4 +84,3 @@ def getRandomFlight():
 	return flight
 
 print getRandomFlight()
-
