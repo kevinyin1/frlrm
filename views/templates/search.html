@@ -1,9 +1,32 @@
-<form id="search" role="form" method="post">
-    <input type="text" name="starting-destination" placeholder="Starting Destination"><br>
-    <input type="text" name="start-date" placeholder="Start Date"><br>
-    <input type="text" name="end-date" placeholder="End Date"><br>
-    <button type="submit">Search</button>
-</form>
+{% extends "general-layout.html" %}
 
-<br><br>
-{{ bestDeals }}
+{% block body %}
+
+<main role="main" class="container" style="margin-top: 30px">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <form id="search" role="form" method="post">
+                <label>Where would you like to departure?</label> <input type="text" name="starting-destination" placeholder="Starting Destination"><br>
+                <label>When would you like to departure?</label> <input type="text" name="start-date" placeholder="Start Date"><br>
+                <label>When would you like to return?</label> <input type="text" name="end-date" placeholder="End Date"><br>
+                <label>When would you like to return?</label> <input type="text" name="end-date" placeholder="End Date"><br>
+                <label>What is your budget?</label> <b>$ 10</b> <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="10" data-slider-max="20" data-slider-step="1" data-slider-value="14"/> <b>$ 1000</b>
+                <br>
+                <button type="submit">Search</button>
+            </form>
+            <script>
+                $("#ex6").slider();
+                    $("#ex6").on("slide", function(slideEvt) {
+                        $("#ex6SliderVal").text(slideEvt.value);
+                    });
+            </script>      
+        </div>          
+        <div class="col-md-2"></div>
+    </div>
+</main> 
+{% endblock %}
+
+
+
+
