@@ -1,3 +1,22 @@
+import csv
+import glob, os
+import random
+from random import randint
+from datetime import datetime
+import ast
+import requests
+import pprint
+
+f1 = file('data/LowestFares.csv', 'r')
+c1 = csv.reader(f1)
+
+starting_airport = "JFK" #raw_input("What's the starting airport?: ")
+#howManyPeople = raw_input("How many adults are going?: ")
+#budgetForTrip = raw_input("What's your budget?: ")
+startDate = "01/01/2018" #aw_input("What's your start date?: ")
+endDate = "03/25/2018" #raw_input("What's your end date?: ")
+totalTrip = 0
+
 def getDeals(startDate = None, endDate = None):
 	possibleDeals = []
 	print(datetime.strptime(startDate, "%m/%d/%Y").date())
@@ -132,3 +151,12 @@ def getNearby(flight):
 				nearby[searchType].append(tempDict)
 
 	return nearby
+	
+
+
+global possibleDeals
+possibleDeals = getDeals(startDate, endDate)
+
+flight = getRandomFlight()
+getNearby(flight)
+
