@@ -5,8 +5,21 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /css
+  static_dir: static/css
+- url: /js
+  static_dir: static/js
+- url: /scss
+  static_dir: static/scss
+- url: /img
+  static_dir: static/img
+- url: /vendor
+  static_dir: static/vendor
+- url: /video
+  static_dir: static/video
 - url: /.*
   script: views.main.app
+
 
 libraries:
 - name: webapp2
