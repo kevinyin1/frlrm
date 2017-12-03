@@ -7,7 +7,7 @@ import ast
 import requests
 import pprint
 
-f1 = file('data/LowestFares.csv', 'r')
+f1 = file('LowestFares.csv', 'r')
 c1 = csv.reader(f1)
 
 starting_airport = "JFK" #raw_input("What's the starting airport?: ")
@@ -17,7 +17,7 @@ startDate = "01/01/2018" #aw_input("What's your start date?: ")
 endDate = "03/25/2018" #raw_input("What's your end date?: ")
 totalTrip = 0
 
-def getDeals(startDate = None, endDate = None):
+def getDeals(startDate = None, endDate = None, budget = 1000000000):
 	possibleDeals = []
 	print(datetime.strptime(startDate, "%m/%d/%Y").date())
 	print(datetime.strptime(endDate, "%m/%d/%Y").date())
@@ -35,24 +35,26 @@ def getDeals(startDate = None, endDate = None):
 				else:
 					if str(row[0]).lower() == str(starting_airport).lower():
 						#print(row[0])
-						flightInfo = {
-							"from": row[0],
-							"to": row[1],
-							"flightDate": row[2],
-							"totalPrice": float(row[5]) + float(row[6]),
-							"score": row[7],
-							"domestic": row[9]
-						}
-						possibleDeals.append(flightInfo)
+						if float(row[5]) + float(row[6]) < budget:
+							flightInfo = {
+								"from": row[0],
+								"to": row[1],
+								"flightDate": row[2],
+								"totalPrice": float(row[5]) + float(row[6]),
+								"score": row[7],
+								"domestic": row[9]
+							}
+							possibleDeals.append(flightInfo)
+
 	#print(possibleDeals)
 	return possibleDeals
 
-def getBestDeals():
-	global possibleDeals
+def getBestDeals(flights):
 	highestScore = 0
 	bestFlight = None
+	possibleDeals = flights
 	for flight in possibleDeals:
-		print flight['score']
+		#print flight['score']
 		if flight['score'] == 0:
 			possibleDeals.remove(flight)
 			continue
@@ -79,8 +81,7 @@ airportCodes = ["ABQ","ACK","ALB","ANU","ATL","AUA","AUS","BDA","BDL","BGI","BNA
 def getCoordsString(airportCode):
 	return coords[airportCodes.index(airportCode)]
 
-def getRandomFlight():
-	global possibleDeals
+def getRandomFlight(possibleDeals):
 	possibleFlights = None
 
 	if len(possibleDeals) > 5:
@@ -95,8 +96,8 @@ def getRandomFlight():
 			possibleFlights.append(item)
 
 	if not possibleFlights == None:
-		choose = randint(0, len(possibleFlights) - 1)
-		flight = possibleFlights[choose]
+		print(possibleFlights)
+		flight = getBestDeals(possibleFlights)
 		return flight
 	else:
 		return None
@@ -107,56 +108,57 @@ def getNearby(flight):
 	destination = flight['to']
 	location = ast.literal_eval(getCoordsString(destination).replace("{lat:", "{\"lat\":").replace(", lng:", ", \"lng\":"))
 
- 	typesToSearch = ["lodging", "food", "attractions"]
- 	nearby = {}
+	typesToSearch = ["lodging", "food", "attractions"]
+	nearby = {}
 	pp = pprint.PrettyPrinter()	
 	
- 	for searchType in typesToSearch:
- 		try:
- 			nearby[searchType]
- 		except KeyError:
- 			nearby.update({searchType: []})
+	for searchType in typesToSearch:
+		try:
+			nearby[searchType]
+		except KeyError:
+			nearby.update({searchType: []})
 
- 		url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + str(location['lat']) + "," + str(location['lng']) + "&keyword=" + searchType + "&rankby=prominence&radius=10000&key=AIzaSyC_phvxZIy7dHAEh_lu7T2p0ZnHhZBDZsw"
+		url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + str(location['lat']) + "," + str(location['lng']) + "&keyword=" + searchType + "&rankby=prominence&radius=10000&key=AIzaSyC_phvxZIy7dHAEh_lu7T2p0ZnHhZBDZsw"
 
- 		r = requests.get(url)
-	
- 		for result in r.json['results']:
- 			print("price_level" in result)
- 			if "rating" in result:
- 				rating = result['rating']
- 			else:
- 				rating = None
+		r = requests.get(url)
+		
+		for result in r.json['results']:
+			if "rating" in result:
+				rating = result['rating']
+			else:
+				rating = None
 
- 			tempDict = {
- 				"name": result['name'].encode('utf-8'),
- 				"address": result['vicinity'],
- 				"price_level": price_level,
- 				"rating": rating
- 			}
+			tempDict = {
+				"name": result['name'].encode('utf-8'),
+				"address": result['vicinity'],
+				"rating": rating
+			}
 
- 			for dupSearch in typesToSearch:
- 				try:
- 					if tempDict in nearby[dupSearch]:
- 						exists = True
- 						break
- 				except KeyError:
- 					continue
- 			else:
- 				exists = False
+			for dupSearch in typesToSearch:
+				try:
+					if tempDict in nearby[dupSearch]:
+						exists = True
+						break
+				except KeyError:
+					continue
+			else:
+				exists = False
 
- 			if exists == True:
- 				pass	
- 			else:	
- 				nearby[searchType].append(tempDict)
+			if exists == True:
+				pass	
+			else:	
+				nearby[searchType].append(tempDict)
 
- 	return nearby
+	return nearby
 	
 
-if __name__ == "__main__":
-	global possibleDeals
+if __name__ == "___main___":
 	possibleDeals = getDeals(startDate, endDate)
 
-	flight = getRandomFlight()
-	getNearby(flight)
+	flight = getRandomFlight(possibleDeals)
+
+	if not flight == None:
+		getNearby(flight)
+	else:
+		print(starting_airport)
 
