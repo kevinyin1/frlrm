@@ -19,7 +19,7 @@ class Search(webapp2.RequestHandler):
             'start_destination': self.request.get('starting-destination'),
             'start_date': self.request.get('start-date'),
             'end_date': self.request.get('end-date'),
-            'budget': self.request.get('budget')
+            'budget': self.request.get('budget'),
             'bestDeals': getBestDeals()
         }
         render_template(self, 'search.html', template_values)
