@@ -23,7 +23,7 @@ def getDeals(startDate = None, endDate = None, budget = 1000000000):
 	print(datetime.strptime(endDate, "%m/%d/%Y").date())
 
 	# For Row in CSV
-	for row in c1:
+	for row in filter(lambda x: x[0] in (starting_airport), list(c1)):
 		#print(datetime.strptime(startDate, "%m/%d/%Y").date() < datetime.strptime(row[2], "%m/%d/%Y %H:%M").date() < datetime.strptime(endDate, "%m/%d/%Y").date())
 		
 		# If column 4 == "LOWEST":
