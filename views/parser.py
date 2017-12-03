@@ -107,56 +107,56 @@ def getNearby(flight):
 	destination = flight['to']
 	location = ast.literal_eval(getCoordsString(destination).replace("{lat:", "{\"lat\":").replace(", lng:", ", \"lng\":"))
 
-	typesToSearch = ["lodging", "food", "attractions"]
-	nearby = {}
+ 	typesToSearch = ["lodging", "food", "attractions"]
+ 	nearby = {}
 	pp = pprint.PrettyPrinter()	
 	
-	for searchType in typesToSearch:
-		try:
-			nearby[searchType]
-		except KeyError:
-			nearby.update({searchType: []})
+ 	for searchType in typesToSearch:
+ 		try:
+ 			nearby[searchType]
+ 		except KeyError:
+ 			nearby.update({searchType: []})
 
-		url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + str(location['lat']) + "," + str(location['lng']) + "&keyword=" + searchType + "&rankby=prominence&radius=10000&key=AIzaSyC_phvxZIy7dHAEh_lu7T2p0ZnHhZBDZsw"
+ 		url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + str(location['lat']) + "," + str(location['lng']) + "&keyword=" + searchType + "&rankby=prominence&radius=10000&key=AIzaSyC_phvxZIy7dHAEh_lu7T2p0ZnHhZBDZsw"
 
-		r = requests.get(url)
-		
-		for result in r.json['results']:
-			print("price_level" in result)
-			if "rating" in result:
-				rating = result['rating']
-			else:
-				rating = None
+ 		r = requests.get(url)
+	
+ 		for result in r.json['results']:
+ 			print("price_level" in result)
+ 			if "rating" in result:
+ 				rating = result['rating']
+ 			else:
+ 				rating = None
 
-			tempDict = {
-				"name": result['name'].encode('utf-8'),
-				"address": result['vicinity'],
-				"price_level": price_level,
-				"rating": rating
-			}
+ 			tempDict = {
+ 				"name": result['name'].encode('utf-8'),
+ 				"address": result['vicinity'],
+ 				"price_level": price_level,
+ 				"rating": rating
+ 			}
 
-			for dupSearch in typesToSearch:
-				try:
-					if tempDict in nearby[dupSearch]:
-						exists = True
-						break
-				except KeyError:
-					continue
-			else:
-				exists = False
+ 			for dupSearch in typesToSearch:
+ 				try:
+ 					if tempDict in nearby[dupSearch]:
+ 						exists = True
+ 						break
+ 				except KeyError:
+ 					continue
+ 			else:
+ 				exists = False
 
-			if exists == True:
-				pass	
-			else:	
-				nearby[searchType].append(tempDict)
+ 			if exists == True:
+ 				pass	
+ 			else:	
+ 				nearby[searchType].append(tempDict)
 
-	return nearby
+ 	return nearby
 	
 
+if __name__ == "__main__":
+	global possibleDeals
+	possibleDeals = getDeals(startDate, endDate)
 
-global possibleDeals
-possibleDeals = getDeals(startDate, endDate)
-
-flight = getRandomFlight()
-getNearby(flight)
+	flight = getRandomFlight()
+	getNearby(flight)
 
