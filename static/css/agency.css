@@ -86,13 +86,13 @@ section {
 }
 
 .btn-primary {
-  background-color: #c15303;
+  background-color: #fec503;
   border-color: #893900; 
   border-radius: 10px;
   }
   .btn-primary:active, .btn-primary:focus, .btn-primary:hover {
-    background-color: #ff6c02 !important;
-    border-color: #ff6c02 !important;
+    background-color: #fec503 !important;
+    border-color: #fec503 !important;
     color: white; }
   .btn-primary:active, .btn-primary:focus {
     box-shadow: 0 0 0 0.2rem rgba(254, 209, 55, 0.5) !important; }
